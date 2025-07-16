@@ -59,4 +59,17 @@ async function checkServer({ name, host, port }) {
   }
 }
 
+// --- Dummy server to satisfy Render ---
+const express = require('express');
+const app = express();
+
+app.get('/', (req, res) => {
+  res.send('Bot is running!');
+});
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Dummy HTTP server listening on port ${PORT}`);
+});
+
 client.login(process.env.DISCORD_TOKEN);
