@@ -1,0 +1,20 @@
+{
+  "name": "mcserverobserver",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chiwei-ouob/MCServerObserver.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/chiwei-ouob/MCServerObserver/issues"
+  },
+  "homepage": "https://github.com/chiwei-ouob/MCServerObserver#readme",
+  "description": ""
+}
