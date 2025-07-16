@@ -13,7 +13,7 @@ client.once('ready', () => {
 
 async function checkServer() {
   try {
-    const result = await status('10.243.179.32', 43391);
+    const result = await status('amplified-minecraft.junner.org', 43391);
     const playersNow = result.players.sample?.map(p => p.name) || [];
     console.log(`Online Players: ${playersNow}`);
     const newPlayers = playersNow.filter(p => !lastPlayers.includes(p));
