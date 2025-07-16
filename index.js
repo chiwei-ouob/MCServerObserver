@@ -10,7 +10,7 @@ const client = new Client({
 const SERVERS = [
   { name: 'Amplified', host: 'amplified-minecraft.junner.org', port: 13901 },
   { name: 'Normal', host: 'normal-minecraft.junner.org', port: 43391 },
-  { name: 'FanhuaTown', host: 'sg.FanhuaTown.cc', port: 25565 },
+  // { name: 'FanhuaTown', host: 'sg.FanhuaTown.cc', port: 25565 },
 ];
 
 const lastPlayers = new Map(); // Map<server.name, playerName[]>
