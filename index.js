@@ -1,8 +1,10 @@
 require('dotenv').config();
-const { Client, GatewayIntentBits } = require('discord.js');
 const { status } = require('minecraft-server-util');
+const { Client, GatewayIntentBits, REST, Routes, SlashCommandBuilder, Collection } = require('discord.js');
 
-const client = new Client({ intents: [GatewayIntentBits.Guilds] });
+const client = new Client({
+  intents: [GatewayIntentBits.Guilds],
+});
 
 // Define your servers
 const SERVERS = [
@@ -74,3 +76,27 @@ app.listen(PORT, () => {
 });
 
 client.login(process.env.DISCORD_TOKEN);
+
+client.on('interactionCreate', async interaction => {
+  if (!interaction.isChatInputCommand()) return;
+  if (interaction.commandName === 'now') {
+    await interaction.deferReply();
+
+    const lines = [];
+    for (const { name, host, port } of SERVERS) {
+      try {
+        const res = await status(host, port);
+        const players = res.players.sample?.map(p => p.name) || [];
+        const count = players.length;
+        const text = count > 0
+          ? `👥 **${name}**: ${count} online\n> ${players.join(', ')}`
+          : `💤 **${name}**: No one online`;
+        lines.push(text);
+      } catch (err) {
+        lines.push(`⚠️ **${name}**: Unreachable`);
+      }
+    }
+
+    await interaction.editReply(lines.join('\n\n'));
+  }
+});
