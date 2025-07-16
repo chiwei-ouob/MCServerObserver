@@ -16,5 +16,10 @@
     "url": "https://github.com/chiwei-ouob/MCServerObserver/issues"
   },
   "homepage": "https://github.com/chiwei-ouob/MCServerObserver#readme",
-  "description": ""
+  "description": "",
+  "dependencies": {
+    "discord.js": "^14.21.0",
+    "dotenv": "^17.2.0",
+    "minecraft-server-util": "^5.4.4"
+  }
 }
