@@ -13,18 +13,18 @@ client.once('ready', () => {
 
 async function checkServer() {
   try {
-    const result = await status('sg.FanhuaTown.cc', 25565);
+    const result = await status('normal-minecraft.junner.org', 43391);
     const playersNow = result.players.sample?.map(p => p.name) || [];
-
+    console.log(`Online Players: ${playersNow}`);
     const newPlayers = playersNow.filter(p => !lastPlayers.includes(p));
     if (newPlayers.length > 0) {
       const channel = await client.channels.fetch(process.env.CHANNEL_ID);
-      channel.send(`🟢 Players joined: ${newPlayers.join(', ')}`);
+      channel.send(`🟢 ${newPlayers.join(', ')} 剛剛加入`);
     }
 
     lastPlayers = playersNow;
   } catch (err) {
-    console.error('Failed to ping server:', err);
+    console.error('無法連接到伺服器:', err);
   }
 }
 
