@@ -13,7 +13,7 @@ client.once('ready', () => {
 
 async function checkServer() {
   try {
-    const result = await status('your.minecraft.server.ip', 25565);
+    const result = await status('sg.FanhuaTown.cc', 25565);
     const playersNow = result.players.sample?.map(p => p.name) || [];
 
     const newPlayers = playersNow.filter(p => !lastPlayers.includes(p));
