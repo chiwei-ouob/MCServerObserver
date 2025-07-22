@@ -70,6 +70,32 @@ app.get('/', (req, res) => {
   res.send('Bot is running!');
 });
 
+app.get('/status', async (req, res) => {
+  const domain = req.query.domain;
+  const port = parseInt(req.query.port) || 25565;
+
+  if (!domain) {
+    return res.status(400).json({ error: 'Missing domain parameter.' });
+  }
+
+  try {
+    const result = await status(domain, port);
+    const onlinePlayers = result.players.sample?.map(p => p.name) || [];
+    res.json({
+      online: true,
+      playersOnline: result.players.online,
+      players: onlinePlayers,
+      motd: result.motd?.clean || '',
+      version: result.version.name,
+    });
+  } catch (error) {
+    res.status(503).json({
+      online: false,
+      error: error.message || 'Server not reachable',
+    });
+  }
+});
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Dummy HTTP server listening on port ${PORT}`);
