@@ -1,7 +1,7 @@
-require('dotenv').config();
-const { status } = require('minecraft-server-util');
-const { Client, GatewayIntentBits, EmbedBuilder  } = require('discord.js');
-const express = require('express');
+import 'dotenv/config'; 
+import { status } from 'minecraft-server-util';
+import { Client, GatewayIntentBits, EmbedBuilder } from 'discord.js';
+import express from 'express';
 import { GoogleGenAI } from "@google/genai";
 
 // Constants
@@ -82,13 +82,14 @@ Input: 'Joined player: {a_list_of_player_names}'
     config,
     contents,
   });
-  let fileIndex = 0;
+  let fullText = "";
   for await (const chunk of response) {
-    console.log(chunk.text);
-    return chunk.text;
+    const text = chunk.text(); // 注意：新版 SDK 有時需要呼叫 text() 方法，或直接存取 .text
+    console.log(text);
+    fullText += text;
   }
+  return fullText;
 }
-
 
 async function checkServer({ name, host, port }) {
   try {
