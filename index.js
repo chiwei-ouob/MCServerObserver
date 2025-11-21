@@ -100,7 +100,7 @@ Input: 'Joined player: {a_list_of_player_names}'
   //   fullText += text;
   // }
   // return fullText;
-  return response.text;
+  return response.text();
 }
 
 async function checkServer({ name, host, port }) {
