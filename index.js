@@ -93,14 +93,12 @@ Input: 'Joined player: {a_list_of_player_names}'
     config,
     contents,
   });
-  // let fullText = "";
-  // for await (const chunk of response) {
-  //   const text = chunk.text(); // 注意：新版 SDK 有時需要呼叫 text() 方法，或直接存取 .text
-  //   console.log(text);
-  //   fullText += text;
-  // }
-  // return fullText;
-  return response.text();
+  let fullText = "";
+  for await (const chunk of response) {
+    const text = chunk.text;
+    console.log(text);
+    fullText += text;
+  }  return fullText;
 }
 
 async function checkServer({ name, host, port }) {
