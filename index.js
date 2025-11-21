@@ -2,6 +2,7 @@ require('dotenv').config();
 const { status } = require('minecraft-server-util');
 const { Client, GatewayIntentBits, EmbedBuilder  } = require('discord.js');
 const express = require('express');
+import { GoogleGenAI } from "@google/genai";
 
 // Constants
 const SERVERS = [
@@ -42,6 +43,53 @@ async function checkAllServers() {
   await Promise.allSettled(promises);
 }
 
+// Function to call Gemini  // These code are provided by Google AI Studio
+// The client gets the API key from the environment variable `GEMINI_API_KEY`.
+async function gemini(names) {
+  const ai = new GoogleGenAI({
+    apiKey: process.env.GEMINI_API_KEY,
+  });
+  const config = {
+    temperature: 2,
+    thinkingConfig: {
+      thinkingBudget: 1000,
+    },
+    systemInstruction: [
+        {
+          text: `Based on the input, generate a quick, short message to motivate friends join playing minecraft. 
+
+The message should begin with "(Player's names) just joined the Minecraft server, " and follow with a motivating call-to-action.
+
+Input: 'Joined player: {a_list_of_player_names}'
+`,
+        }
+    ],
+  };
+  const model = 'gemini-2.5-flash';
+  const contents = [
+    {
+      role: 'user',
+      parts: [
+        {
+          text: `Joined player: ${names}`,  // <-- The input
+        },
+      ],
+    },
+  ];
+
+  const response = await ai.models.generateContentStream({
+    model,
+    config,
+    contents,
+  });
+  let fileIndex = 0;
+  for await (const chunk of response) {
+    console.log(chunk.text);
+    return chunk.text;
+  }
+}
+
+
 async function checkServer({ name, host, port }) {
   try {
     const result = await status(host, port);
@@ -74,6 +122,7 @@ async function handlePlayerChanges(serverName, result, channel) {
   const leftPlayers = previousPlayers.filter(player => !currentPlayers.includes(player));
   
   if (joinedPlayers.length > 0) {
+    // Call gemini at this line, with parameter 'joinedPlayers'
     await channel.send(`🟢 **${serverName}** 有人加入：${joinedPlayers.join(', ')}`);
   }
   
