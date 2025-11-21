@@ -123,8 +123,28 @@ async function handlePlayerChanges(serverName, result, channel) {
   const leftPlayers = previousPlayers.filter(player => !currentPlayers.includes(player));
   
   if (joinedPlayers.length > 0) {
-    // Call gemini at this line, with parameter 'joinedPlayers'
-    await channel.send(`🟢 **${serverName}** 有人加入：${joinedPlayers.join(', ')}`);
+    // Call gemini, with parameter 'joinedPlayers'
+    try {
+      // 1. 呼叫 Gemini 函式 (記得要 await)
+      // // Call gemini at this line, with parameter 'joinedPlayers'
+      const aiMessage = await gemini(playersString);
+
+      // 2. 發送 AI 生成的訊息
+      // 檢查 aiMessage 是否有內容，避免空訊息報錯
+      if (aiMessage) {
+        await channel.send(aiMessage); 
+      } else {
+        // 如果 AI 回傳空的 (極少見)，就發送原本的預設訊息
+        await channel.send(`🟢 **${serverName}** 有人加入：${playersString}`);
+      }
+      
+    } catch (error) {
+      console.error("Gemini 生成訊息失敗:", error);
+      // 3. 錯誤處理 (Fallback)
+      // 如果 API 額度用完或連線失敗，至少要發送一般的通知，不要讓機器人當掉
+      await channel.send(`🟢 **${serverName}** 有人加入：${playersString}`);
+    }
+    // await channel.send(`🟢 **${serverName}** 有人加入：${joinedPlayers.join(', ')}`);
   }
   
   if (leftPlayers.length > 0) {
