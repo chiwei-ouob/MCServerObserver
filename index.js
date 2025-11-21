@@ -137,6 +137,7 @@ async function handlePlayerChanges(serverName, result, channel) {
     // Call gemini, with parameter 'joinedPlayers'
     try {
       // 1. 呼叫 Gemini 函式 (記得要 await)
+      console.log(`New player ${playersString} joined. Calling Gemini...`);
       const aiMessage = await gemini(playersString);
 
       // 2. 發送 AI 生成的訊息
