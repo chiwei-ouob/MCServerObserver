@@ -1,13 +1,13 @@
 require('dotenv').config();
 const { status } = require('minecraft-server-util');
-const { Client, GatewayIntentBits } = require('discord.js');
+const { Client, GatewayIntentBits, EmbedBuilder  } = require('discord.js');
 const express = require('express');
 
 // Constants
 const SERVERS = [
-  { name: 'Amplified', host: 'amplified-minecraft.junner.org', port: 13901 },
-  { name: 'Normal', host: 'normal-minecraft.junner.org', port: 43391 },
-  // { name: 'FanhuaTown', host: 'sg.FanhuaTown.cc', port: 25565 },
+  // { name: 'Amplified', host: 'amplified-minecraft.junner.org', port: 13901 },
+  // { name: 'Normal', host: 'normal-minecraft.junner.org', port: 43391 },
+  { name: 'My Server', host: 'chiwei.aternos.me', port: 25565 },
 ];
 
 const CHECK_INTERVAL = 30000; // 30 seconds

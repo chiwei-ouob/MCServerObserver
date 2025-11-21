@@ -18,6 +18,7 @@
   "homepage": "https://github.com/chiwei-ouob/MCServerObserver#readme",
   "description": "",
   "dependencies": {
+    "@google/genai": "^1.30.0",
     "discord.js": "^14.21.0",
     "dotenv": "^17.2.0",
     "express": "^5.1.0",
