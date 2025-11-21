@@ -222,7 +222,8 @@ app.get('/', (req, res) => {
   });
 });
 
-app.get('/status', async (req, res) => {
+app.get('/status', async (req, res) => {  
+  // req.query 是 Express (網頁框架) 用來抓取網址 ? 後面參數的功能
   const { domain, port = '25565' } = req.query;
   
   if (!domain) {
