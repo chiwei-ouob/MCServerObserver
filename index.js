@@ -147,6 +147,7 @@ async function handlePlayerChanges(serverName, result, channel) {
         await channel.send(aiMessage); 
       } else {
         // 如果 AI 回傳空的 (極少見)，就發送原本的預設訊息
+        console.error("aiMessage:", aiMessage);
         await channel.send(`🟢 **${serverName}** 有人加入：${playersString}`);
       }
       
