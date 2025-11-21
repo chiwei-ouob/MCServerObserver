@@ -123,10 +123,10 @@ async function handlePlayerChanges(serverName, result, channel) {
   const leftPlayers = previousPlayers.filter(player => !currentPlayers.includes(player));
   
   if (joinedPlayers.length > 0) {
+    const playersString = joinedPlayers.join(', ');
     // Call gemini, with parameter 'joinedPlayers'
     try {
       // 1. 呼叫 Gemini 函式 (記得要 await)
-      // // Call gemini at this line, with parameter 'joinedPlayers'
       const aiMessage = await gemini(playersString);
 
       // 2. 發送 AI 生成的訊息
