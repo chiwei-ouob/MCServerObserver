@@ -23,6 +23,17 @@ const client = new Client({
   intents: [GatewayIntentBits.Guilds],
 });
 
+// 捕捉 Discord Client 內部的連線錯誤 (防止機器人崩潰)
+client.on('error', (error) => {
+    console.error('⚠️ Discord Client Error:', error.message);
+    // 這裡捕捉後，機器人就不會因為連線問題而自殺
+});
+
+// 捕捉未處理的 Promise 錯誤 (例如 API 逾時) (防止機器人崩潰)
+process.on('unhandledRejection', (error) => {
+    console.error('⚠️ Unhandled Rejection:', error);
+});
+
 // Bot event handlers
 client.once('ready', () => {
   console.log(`✅ Bot logged in as ${client.user.tag}`);
@@ -82,13 +93,14 @@ Input: 'Joined player: {a_list_of_player_names}'
     config,
     contents,
   });
-  let fullText = "";
-  for await (const chunk of response) {
-    const text = chunk.text(); // 注意：新版 SDK 有時需要呼叫 text() 方法，或直接存取 .text
-    console.log(text);
-    fullText += text;
-  }
-  return fullText;
+  // let fullText = "";
+  // for await (const chunk of response) {
+  //   const text = chunk.text(); // 注意：新版 SDK 有時需要呼叫 text() 方法，或直接存取 .text
+  //   console.log(text);
+  //   fullText += text;
+  // }
+  // return fullText;
+  return response.text
 }
 
 async function checkServer({ name, host, port }) {
