@@ -68,9 +68,8 @@ async function gemini(names) {
     systemInstruction: [
         {
           text: `Based on the input, generate a quick, short message to motivate friends join playing minecraft. 
-
 The message should begin with "(Player's names) just joined the Minecraft server, " and follow with a motivating call-to-action.
-
+Language: Traditional Chinese (Taiwan).
 Input: 'Joined player: {a_list_of_player_names}'
 `,
         }
