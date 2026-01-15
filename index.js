@@ -7,8 +7,8 @@ import { GoogleGenAI } from "@google/genai";
 // Constants
 const SERVERS = [
   // { name: 'Amplified', host: 'amplified-minecraft.junner.org', port: 13901 },
-  // { name: 'Normal', host: 'normal-minecraft.junner.org', port: 43391 },
-  { name: 'My Server', host: 'chiwei.aternos.me', port: 25565 },
+  { name: 'Normal', host: 'normal-minecraft.junner.org', port: 43391 },
+  // { name: 'My Server', host: 'chiwei.aternos.me', port: 25565 },
 ];
 
 const CHECK_INTERVAL = 30000; // 30 seconds
