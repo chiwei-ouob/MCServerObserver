@@ -7,20 +7,23 @@ import admin from 'firebase-admin';  // FOR PUNCH CLOCK
 import { GoogleGenAI } from "@google/genai";
 
 // Initialize Firebase Admin  // FOR PUNCH CLOCK
-// You will need to add a FIREBASE_SERVICE_ACCOUNT variable in Render later
+let db = null; 
 if (!admin.apps.length) {
   try {
-    // We parse the JSON string stored in your environment variables
+    if (!process.env.FIREBASE_SERVICE_ACCOUNT) {
+      throw new Error("FIREBASE_SERVICE_ACCOUNT is missing in Render environment variables!");
+    }
     const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
     admin.initializeApp({
       credential: admin.credential.cert(serviceAccount)
     });
+    db = admin.firestore(); 
     console.log("✅ Firebase Admin initialized successfully.");
   } catch (error) {
-    console.error("⚠️ Firebase Admin failed to initialize. Check environment variables:", error.message);
+    console.error("⚠️ FIREBASE INIT FAILED:", error.message);
+    console.error("Make sure you pasted the ENTIRE JSON file correctly into Render.");
   }
 }
-const db = admin.firestore();
 
 
 // Constants
@@ -305,6 +308,10 @@ app.post('/api/classify', async (req, res) => {
 // Endpoint 2: Frontend sends approved text + tags -> Render saves to Firebase
 app.post('/api/tasks', async (req, res) => {
   try {
+    // Prevent crash if DB isn't connected
+    if (!db) {
+      return res.status(500).json({ error: 'Database is not configured correctly on the server.' });
+    }
     const { text, tags } = req.body;
     if (!text) return res.status(400).json({ error: 'Text is required to save a task.' });
     const newTask = {
