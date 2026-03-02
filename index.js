@@ -2,7 +2,26 @@ import 'dotenv/config';
 import { status } from 'minecraft-server-util';
 import { Client, GatewayIntentBits, EmbedBuilder } from 'discord.js';
 import express from 'express';
+import cors from 'cors';  // FOR PUNCH CLOCK
+import admin from 'firebase-admin';  // FOR PUNCH CLOCK
 import { GoogleGenAI } from "@google/genai";
+
+// Initialize Firebase Admin  // FOR PUNCH CLOCK
+// You will need to add a FIREBASE_SERVICE_ACCOUNT variable in Render later
+if (!admin.apps.length) {
+  try {
+    // We parse the JSON string stored in your environment variables
+    const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+    admin.initializeApp({
+      credential: admin.credential.cert(serviceAccount)
+    });
+    console.log("✅ Firebase Admin initialized successfully.");
+  } catch (error) {
+    console.error("⚠️ Firebase Admin failed to initialize. Check environment variables:", error.message);
+  }
+}
+const db = admin.firestore();
+
 
 // Constants
 const SERVERS = [
@@ -213,6 +232,11 @@ async function getServerStatus({ name, host, port }) {
 // Express server setup (for hosting platforms like Render)
 const app = express();
 
+// --- FOR PUNCH CLOCK ---
+app.use(cors());
+app.use(express.json()); 
+// -----------------------------------
+
 app.get('/', (req, res) => {
   res.json({
     status: 'Bot is running!',
@@ -249,6 +273,58 @@ app.get('/status', async (req, res) => {
     });
   }
 });
+
+// --- FOR PUNCH CLOCK ---
+// Endpoint 1: Frontend sends text -> Render asks Gemini -> Render returns Tags
+app.post('/api/classify', async (req, res) => {
+  try {
+    const { text } = req.body;
+    if (!text) return res.status(400).json({ error: 'Text is required' });
+    console.log(`Classifying task: "${text}"`);
+    const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY }); 
+    const response = await ai.models.generateContent({
+        model: 'gemini-2.5-flash',
+        config: {
+            temperature: 0.1, 
+            systemInstruction: "You are a noticeboard assistant. Read the task and assign 1 relevant time tags from this exact list: [上午班, 下午班, 晚班, 通用]. If time tag is not '通用', assign another 0 to 1 relevant tags from this exact list: [上班時, 下班前]. Respond ONLY with a comma-separated list of tags, no other text. Do not use hashtags. Example output 1: [下午班, 上班時] Example output 2: [通用] Example output 3: [上午班]"
+        },
+        contents: [{ role: 'user', parts: [{ text: text }] }]
+    });
+    
+    // Clean up the AI response into a neat JavaScript array
+    const tagsString = response.text || "";
+    const tags = tagsString.split(',').map(tag => tag.trim()).filter(tag => tag);
+
+    res.json({ tags });
+  } catch (error) {
+    console.error('Classification Error:', error);
+    res.status(500).json({ error: 'Failed to classify task' });
+  }
+});
+
+// Endpoint 2: Frontend sends approved text + tags -> Render saves to Firebase
+app.post('/api/tasks', async (req, res) => {
+  try {
+    const { text, tags } = req.body;
+    if (!text) return res.status(400).json({ error: 'Text is required to save a task.' });
+    const newTask = {
+        originalText: text,
+        tags: tags || [],
+        // serverTimestamp ensures the time is perfectly accurate to the server
+        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+        status: 'alive'
+    };
+    // Save directly to the 'tasks' collection in Firestore
+    const docRef = await db.collection('tasks').add(newTask);
+    console.log(`✅ Saved new task to Firebase: ${docRef.id}`);
+    res.json({ success: true, id: docRef.id });
+  } catch (error) {
+    console.error('Firebase Save Error:', error);
+    res.status(500).json({ error: 'Failed to save task to database' });
+  }
+});
+// -----------------------------------
+
 
 // Start services
 app.listen(PORT, () => {
